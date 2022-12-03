@@ -11,19 +11,24 @@ const options: mqtt.IClientOptions = {
   password: process.env.MQTT_PASSWORD
 }
 
+const sensorId = 2
+const selectedRoom = 'sala'
+const temperatures = [24, 24, 23]
+
+const mqttTopic = `sensors/${selectedRoom}/temperature/${sensorId}`
 const client = mqtt.connect(options)
 client.on('connect', function () {
-  client.subscribe('sensors/temperature', function (err) {
+  client.subscribe(mqttTopic, function (err) {
     if (!err) {
-      for (let i = 0; i <= 20; i++) {
-        client.publish('sensors/temperature', i.toString())
+      for (let i = 0; i <= temperatures.length - 1; i++) {
+        client.publish(mqttTopic, temperatures[i].toString())
       }
     }
   })
 })
 
 client.on('message', function (topic, message) {
-  console.log('🚀 ~ file: index.ts ~ line 14 ~ topic', topic)
-  console.log(message.toString())
+  console.log('🚀 ~ file: index.ts ~ line 31 ~ topic', topic)
+  console.log('🚀 ~ file: index.ts ~ line 32 ~ message', message.toString())
   client.end()
 })
